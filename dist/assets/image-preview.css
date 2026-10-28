@@ -1,0 +1,16 @@
+/* Image preview over the editor (src/image-preview.js). The checkerboard shows transparency. */
+:root{--preview-check-a:#24242c;--preview-check-b:#2c2c36;--preview-check-size:16px}
+:root[data-theme="light"]{--preview-check-a:#FFFFFF;--preview-check-b:#EAE6E0}
+
+#image-preview{position:absolute;inset:0;z-index:2;margin:0;padding:10px 12px;display:flex;flex-direction:column;gap:8px;background:var(--surface)}
+#image-preview[hidden]{display:none}
+#image-preview .image-frame{flex:1;min-height:0;display:grid;place-items:center;overflow:hidden;border-radius:var(--radius-small);
+  background-color:var(--preview-check-a);
+  background-image:conic-gradient(var(--preview-check-b) 25%,transparent 0 50%,var(--preview-check-b) 0 75%,transparent 0);
+  background-size:var(--preview-check-size) var(--preview-check-size)}
+#image-preview img{display:block;max-width:100%;max-height:100%;object-fit:contain;opacity:0;transition:opacity .15s ease}
+#image-preview[data-state="ready"] img{opacity:1}
+#image-preview figcaption{display:flex;justify-content:space-between;align-items:center;gap:12px;color:var(--muted);font-family:ui-monospace,monospace;font-size:var(--font-small)}
+#image-preview[data-state="error"] .image-info{color:var(--upload-bad-text)}
+#image-preview .image-open{color:var(--accent);white-space:nowrap}
+@media (prefers-reduced-motion:reduce){#image-preview img{transition:none}}

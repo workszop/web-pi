@@ -197,6 +197,12 @@ export class WorkspaceController {
 
   async dispatch(action, args = {}) {
     if (action === 'stop') { this.operation?.abort(new DOMException('Stopped.', 'AbortError')); this.run?.cancel(); return true; }
+    if (action === 'read_image') {
+      // Read-only, so it is allowed while the model is busy (the editor preview uses it).
+      const [ref] = await this.workspace.readImages([args.path]);
+      if (!ref?.type) throw new Error('Not an image in the workspace.');
+      return { type: ref.type, bytes: ref.bytes };
+    }
     if (action === 'snapshot') {
       // Export native messages alongside display messages so exports are restorable.
       if (this.busy) throw new Error('Wait for the current operation or stop it before exporting.');

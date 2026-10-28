@@ -64,7 +64,8 @@ A third choice, **VL-2B · 4-bit · vision**, loads
 garbage on some GPUs (Intel Xe-LPG). It uses the same tools and agent loop. Upload `.png .jpg .webp .gif .bmp` images (up to
 5 MiB), then ask about them: name the file (*What is in photo.jpg?*) or just
 say "the image" / "zdjęcie" to attach the newest one. A notice shows which file
-was attached, and the choice is saved with the message.
+was attached, and the choice is saved with the message. Selecting an image in the file
+list shows a preview in the editor.
 The supplied model library includes 17 kernels and 50 variants for these two
 files. Reload the page to switch quantization after loading.
 
@@ -148,7 +149,8 @@ processor.batch_decode(out.slice(null, [inputs.input_ids.dims.at(-1), null]), { 
 | `src/theme.js`, `assets/theme-light.css` | Theme switch (header button or Alt+Shift+T; saved, defaults to the system setting) and the light edulab-coloured theme; also recolours the Pi terminal live. |
 | `assets/type-scale.css` | Larger type; sizes are the `--font-*` tokens inline in `index.html` (`--font-chat` sizes the chat terminal). |
 | `src/vl-model.js` | LFM3-VL-2B adapter (transformers.js) with the runtime's generate() shape. |
-| `src/worker-hook.js` | Lets `src/upload.js` send image bytes to the worker. |
+| `src/worker-hook.js`, `src/worker-rpc.js` | Let sibling modules send their own requests to the worker (image upload, image preview). |
+| `src/image-preview.js`, `assets/image-preview.css` | Shows a selected workspace image in the editor (size, format, open full size). |
 | `src/conversation.js` | Pi display-message adapter. |
 | `src/workspace.js`, `vendor/just-bash.js` | Virtual filesystem, shell, and persistence. |
 | `scripts/` | Optional local server and static build. |

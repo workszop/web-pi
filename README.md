@@ -44,7 +44,8 @@ A third choice, **VL-2B · 4-bit · vision**, loads
 garbage on some GPUs (Intel Xe-LPG). It uses the same tools and agent loop. Upload `.png .jpg .webp .gif .bmp` images (up to
 5 MiB), then ask about them: name the file (*What is in photo.jpg?*) or just
 say "the image" / "zdjęcie" to attach the newest one. A notice shows which file
-was attached, and the choice is saved with the message.
+was attached, and the choice is saved with the message. Selecting an image in the file
+list shows a preview in the editor.
 The supplied model library includes 17 kernels and 50 variants for these two
 files. Reload the page to switch quantization after loading.
 

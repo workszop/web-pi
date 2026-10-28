@@ -27,6 +27,8 @@
   <link rel="stylesheet" href="./assets/header.css">
   <link rel="stylesheet" href="./assets/type-scale.css">
   <link rel="stylesheet" href="./assets/theme-light.css">
+  <link rel="stylesheet" href="./assets/image-preview.css">
+  <script type="module" src="./src/image-preview.js"></script>
   <script src="./vendor/robot.js"></script>
   <script src="./src/worker-hook.js"></script>
   <script type="module" src="./src/mascot.js"></script>
@@ -73,7 +75,7 @@
         <p><strong>Tip:</strong> the model sees at most 6,000 characters per tool result, so for big files ask it to use <code>head</code>, <code>grep</code> or <code>awk</code>. Python and JavaScript files can be stored and edited, but not run.</p>
         <p class="upload-help-how">Click <strong>Upload</strong> or drag files onto the Workspace panel.</p>
       </div>
-      <div class="file-area"><nav id="files" aria-label="Files"></nav><div class="editor-area"><div class="editor-heading"><span class="editor-file"><span id="filetype"></span><span id="filename">Select a file</span></span><button id="save" class="quiet" disabled>Save</button></div><label for="editor" class="sr-only">File contents</label><div class="editor-input"><pre id="editor-highlight" aria-hidden="true"></pre><textarea id="editor" wrap="off" autocomplete="off" autocapitalize="off" spellcheck="false" disabled placeholder="Select a file to inspect or edit it."></textarea></div></div></div>
+      <div class="file-area"><nav id="files" aria-label="Files"></nav><div class="editor-area"><div class="editor-heading"><span class="editor-file"><span id="filetype"></span><span id="filename">Select a file</span></span><button id="save" class="quiet" disabled>Save</button></div><label for="editor" class="sr-only">File contents</label><div class="editor-input"><pre id="editor-highlight" aria-hidden="true"></pre><textarea id="editor" wrap="off" autocomplete="off" autocapitalize="off" spellcheck="false" disabled placeholder="Select a file to inspect or edit it."></textarea><figure id="image-preview" hidden data-state="hidden"><div class="image-frame"><img alt="" draggable="false"></div><figcaption><span class="image-info" aria-live="polite"></span><a class="image-open" href="#" target="_blank" rel="noopener" hidden>Open full size ↗</a></figcaption></figure></div></div></div>
       <details class="terminal" open>
         <summary>Shell <span>just-bash</span></summary>
         <div class="shell-toolbar"><span>/workspace</span><button id="shell-clear" type="button" class="quiet" title="Clear shell output (Ctrl+L)">Clear</button></div>
