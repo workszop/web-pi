@@ -15,5 +15,6 @@ robot from workszop/q223-kiosk-demo (vendor/robot.js, src/mascot.js); added an
 upload helper (src/upload.js) and a header credit linking the original Space.
 The header logo is the edulab rocking-horse mark (assets/edulab-mark-paper.png); the Pi logo
 remains in the setup dialog credits.
+A light theme (edulab colours) and theme switch were added (src/theme.js, assets/theme-light.css).
 Added an LFM3-VL-2B option (src/vl-model.js) that runs onnx-community/LFM3-VL-2B-ONNX
 with transformers.js 4.3.2 (Hugging Face, Apache-2.0), loaded from jsDelivr at runtime.

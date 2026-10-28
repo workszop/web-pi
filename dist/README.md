@@ -145,6 +145,7 @@ processor.batch_decode(out.slice(null, [inputs.input_ids.dims.at(-1), null]), { 
 | `src/upload.js`, `assets/upload.css` | Upload pre-checks, drag-and-drop and file-type help. |
 | `src/mascot.js`, `vendor/robot.js`, `assets/mascot-robot.css` | Walking robot mascot (from q223-kiosk-demo). |
 | `assets/header.css`, `assets/edulab-mark-paper.png` | Rocking-horse logo and "based on" credit in the header. |
+| `src/theme.js`, `assets/theme-light.css` | Theme switch (header button or Alt+Shift+T; saved, defaults to the system setting) and the light edulab-coloured theme; also recolours the Pi terminal live. |
 | `assets/type-scale.css` | Larger type; sizes are the `--font-*` tokens inline in `index.html` (`--font-chat` sizes the chat terminal). |
 | `src/vl-model.js` | LFM3-VL-2B adapter (transformers.js) with the runtime's generate() shape. |
 | `src/worker-hook.js` | Lets `src/upload.js` send image bytes to the worker. |

@@ -1,0 +1,67 @@
+/* Light theme (edulab colours) behind :root[data-theme="light"], set by src/theme.js.
+   The bundle's tokens are redefined here; rules below replace colours the bundle hard-codes. */
+:root[data-theme="light"]{
+  color-scheme:light;
+  /* the bundle's own tokens */
+  --background:#FFFFFF;--surface:#F5F3F0;--panel:#F5F3F0;--control:#EAE6E0;--hover:#E0DBD3;--selected:#E0DBD3;
+  --line:#E0DBD3;--line-strong:#857C69;--text:#1C1917;--muted:#625B53;--accent:#146D97;
+  /* edulab colours used below */
+  --edu-yellow:#FFD500;--edu-yellow-hover:#F0C800;--edu-yellow-ink:#1C1917;
+  --edu-green-soft:#078342;--edu-red-soft:#C92823;--edu-on-colour:#FFFFFF;--edu-ink:#1C1917;--edu-line-2:#C9C2B7;
+  --edu-shadow-md:0 6px 18px rgba(33,30,26,.12),0 1px 3px rgba(33,30,26,.08);
+  --edu-scrim:rgba(28,25,23,.45);--edu-selection:rgba(20,109,151,.22);--edu-green-text:#06753B;--edu-red-text:#C42722;
+  /* syntax colours: edulab hues darkened to >= 4.6:1 on stone #EAE6E0 */
+  --syn-comment:#526D48;--syn-punct:#44403C;--syn-tag:#C42722;--syn-keyword:#7254B6;--syn-string:#A3361F;
+  --syn-function:#7A4E00;--syn-property:#0F5E85;--syn-number:#06753B;
+  /* my own components */
+  --upload-bad-text:#C42722;--upload-bad-surface:#F5F3F0;
+  --robot-shadow:rgba(28,25,23,0.28);
+  --select-bg:#FFFFFF;--select-border:#857C69;--select-focus:#146D97;
+}
+
+/* Primary actions: solid yellow with ink text (edulab primary). */
+:root[data-theme="light"] .primary,
+:root[data-theme="light"] #send.has-input:not(:disabled),
+:root[data-theme="light"] #model-confirm{background:var(--edu-yellow);color:var(--edu-yellow-ink)}
+:root[data-theme="light"] .primary:hover,
+:root[data-theme="light"] #send.has-input:not(:disabled):hover,
+:root[data-theme="light"] #model-confirm:hover{background:var(--edu-yellow-hover)}
+:root[data-theme="light"] #load.is-loaded{background:var(--edu-green-soft);color:var(--edu-on-colour)}
+:root[data-theme="light"] .runtime-meter[data-state=error] .runtime-dot{background:var(--edu-red-soft)}
+:root[data-theme="light"] #model-error{background:var(--edu-red-soft);color:var(--edu-on-colour)}
+
+/* Editor head: stone strip; focus changes the fill instead of a one-sided accent line. */
+:root[data-theme="light"] .editor-heading{background:var(--control)}
+:root[data-theme="light"] .editor-area:focus-within .editor-heading{background:var(--hover);box-shadow:none}
+:root[data-theme="light"] #editor::selection,:root[data-theme="light"] #command::selection{background:var(--edu-selection)}
+
+/* Dialog: light card on a soft scrim. */
+:root[data-theme="light"] #model-dialog{box-shadow:var(--edu-shadow-md)}
+:root[data-theme="light"] #model-dialog::backdrop{background:var(--edu-scrim)}
+:root[data-theme="light"] .mascot-suggestion{box-shadow:0 3px var(--edu-line-2)}
+
+/* Syntax colours in the editor and the shell. */
+:root[data-theme="light"] #editor-highlight .token.comment,:root[data-theme="light"] #editor-highlight .token.prolog,:root[data-theme="light"] #editor-highlight .token.doctype,
+:root[data-theme="light"] .shell-code .token.comment,:root[data-theme="light"] #command-highlight .token.comment{color:var(--syn-comment)}
+:root[data-theme="light"] #editor-highlight .token.punctuation{color:var(--syn-punct)}
+:root[data-theme="light"] #editor-highlight .token.tag,:root[data-theme="light"] #editor-highlight .token.deleted{color:var(--syn-tag)}
+:root[data-theme="light"] #editor-highlight .token.keyword,:root[data-theme="light"] #editor-highlight .token.selector,:root[data-theme="light"] #editor-highlight .token.important,
+:root[data-theme="light"] .shell-code .token.variable,:root[data-theme="light"] .shell-code .token.assign-left,:root[data-theme="light"] #command-highlight .token.variable,:root[data-theme="light"] #command-highlight .token.assign-left{color:var(--syn-keyword)}
+:root[data-theme="light"] #editor-highlight .token.string,:root[data-theme="light"] #editor-highlight .token.attr-value,:root[data-theme="light"] #editor-highlight .token.inserted,
+:root[data-theme="light"] .shell-code .token.string,:root[data-theme="light"] #command-highlight .token.string{color:var(--syn-string)}
+:root[data-theme="light"] #editor-highlight .token.function,:root[data-theme="light"] #editor-highlight .token.builtin,:root[data-theme="light"] #editor-highlight .token.class-name,
+:root[data-theme="light"] .shell-code .token.function,:root[data-theme="light"] .shell-code .token.builtin,:root[data-theme="light"] #command-highlight .token.function,:root[data-theme="light"] #command-highlight .token.builtin{color:var(--syn-function)}
+:root[data-theme="light"] #editor-highlight .token.attr-name,:root[data-theme="light"] #editor-highlight .token.property,:root[data-theme="light"] #editor-highlight .token.variable,
+:root[data-theme="light"] .shell-code .token.parameter,:root[data-theme="light"] #command-highlight .token.parameter{color:var(--syn-property)}
+:root[data-theme="light"] #editor-highlight .token.number,:root[data-theme="light"] #editor-highlight .token.boolean,:root[data-theme="light"] #editor-highlight .token.constant,:root[data-theme="light"] #editor-highlight .token.operator,:root[data-theme="light"] #editor-highlight .token.entity,:root[data-theme="light"] #editor-highlight .token.url,
+:root[data-theme="light"] .shell-code .token.keyword,:root[data-theme="light"] .shell-code .token.operator,:root[data-theme="light"] .shell-code .token.number,:root[data-theme="light"] #command-highlight .token.keyword,:root[data-theme="light"] #command-highlight .token.operator,:root[data-theme="light"] #command-highlight .token.number{color:var(--syn-number)}
+:root[data-theme="light"] .shell-status.success{color:var(--edu-green-text)}
+:root[data-theme="light"] .shell-status.error,:root[data-theme="light"] .shell-stderr{color:var(--edu-red-text)}
+
+/* Theme toggle and logo colourway (ink horse on the light header, paper horse on the dark one). */
+.theme-toggle{display:inline-flex;align-items:center;justify-content:center;min-width:32px;padding:4px 7px}
+.theme-toggle svg{display:block}
+.theme-toggle .icon-moon,:root[data-theme="light"] .theme-toggle .icon-sun{display:none}
+:root[data-theme="light"] .theme-toggle .icon-moon{display:block}
+.brand-mark-ink,:root[data-theme="light"] .brand-mark-paper{display:none}
+:root[data-theme="light"] .brand-mark-ink{display:block}

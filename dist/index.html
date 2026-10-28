@@ -3,7 +3,7 @@
 <head>
   <meta charset="utf-8"><meta name="viewport" content="width=device-width, initial-scale=1">
   <meta name="theme-color" content="#18181e">
-  <meta name="color-scheme" content="dark">
+  <meta name="color-scheme" content="dark light">
   <link rel="icon" href="./favicon.svg" type="image/svg+xml">
   <meta name="description" content="Pi, LFM3 and a bash workspace, running entirely in your browser.">
   <meta property="og:type" content="website">
@@ -13,6 +13,7 @@
   <meta name="twitter:title" content="Pi, entirely in your browser.">
   <meta name="twitter:description" content="LFM3-1.7B, WebGPU inference, and a local shell. A coding agent running entirely in your browser.">
   <title>LFM3 WebGPU Workspace</title>
+  <script src="./src/theme.js"></script>
   <style>
     /* Type scale tokens (assets/type-scale.css applies them). Inline so the chat terminal reads --font-chat at start-up. */
     :root{--font-chat:16px;--font-editor:14px;--font-files:13px;--font-shell:14px;--font-ui:13px;--font-small:12px;--font-tiny:11px}
@@ -25,13 +26,14 @@
   <link rel="stylesheet" href="./assets/mascot-robot.css">
   <link rel="stylesheet" href="./assets/header.css">
   <link rel="stylesheet" href="./assets/type-scale.css">
+  <link rel="stylesheet" href="./assets/theme-light.css">
   <script src="./vendor/robot.js"></script>
   <script src="./src/worker-hook.js"></script>
   <script type="module" src="./src/mascot.js"></script>
   <script type="module" src="./src/upload.js"></script>
 </head>
 <body>
-  <header><div class="brand-group"><a class="brand" href="./" aria-label="Home"><img class="brand-mark" src="./assets/edulab-mark-paper.png" width="250" height="250" alt="" draggable="false"></a><p class="based-on">based on <a href="https://huggingface.co/spaces/TechnoBaptist/LFM3-1.7B-WebGPU-Pi" target="_blank" rel="noopener noreferrer" title="Original app on Hugging Face Spaces (opens in a new tab)">TechnoBaptist/LFM3-1.7B-WebGPU-Pi</a></p></div>
+  <header><div class="brand-group"><a class="brand" href="./" aria-label="Home"><img class="brand-mark brand-mark-paper" src="./assets/edulab-mark-paper.png" width="250" height="250" alt="" draggable="false"><img class="brand-mark brand-mark-ink" src="./assets/edulab-mark-ink.png" width="250" height="250" alt="" draggable="false"></a><p class="based-on">based on <a href="https://huggingface.co/spaces/TechnoBaptist/LFM3-1.7B-WebGPU-Pi" target="_blank" rel="noopener noreferrer" title="Original app on Hugging Face Spaces (opens in a new tab)">TechnoBaptist/LFM3-1.7B-WebGPU-Pi</a></p></div>
       <div id="runtime-meter" class="runtime-meter" role="group" aria-label="Execution in this browser" data-state="idle">
         <div class="runtime-content">
           <span class="runtime-location"><span class="runtime-dot" aria-hidden="true"></span><span class="runtime-engine">WebGPU</span></span>
@@ -42,7 +44,7 @@
         <span class="sr-only" role="status" aria-live="polite"></span>
       </div>
       <div class="model-panel">
-        <div class="model-heading"><div><a class="header-model-source" href="https://huggingface.co/LiquidAI/LFM3-1.7B-GGUF" target="_blank" rel="noopener noreferrer" aria-label="LFM3-1.7B by Liquid AI on Hugging Face (opens in a new tab)" title="View LFM3-1.7B GGUF weights on Hugging Face"><strong>LFM3-1.7B</strong></a><label class="sr-only" for="model-file">Model quantization</label><select id="model-file" aria-label="Model quantization" title="Choose before loading. Reload the page to change after loading."><option value="LFM3-1.7B-QAD-Q4_0.gguf">QAD · Q4_0</option><option value="LFM3-1.7B-Q4_K_M.gguf">Q4_K_M</option><option value="LFM3-VL-2B-ONNX-q4">VL-2B · 4-bit · vision</option></select></div><button id="load" class="primary" aria-describedby="load-status load-detail">Load model</button></div>
+        <div class="model-heading"><div><a class="header-model-source" href="https://huggingface.co/LiquidAI/LFM3-1.7B-GGUF" target="_blank" rel="noopener noreferrer" aria-label="LFM3-1.7B by Liquid AI on Hugging Face (opens in a new tab)" title="View LFM3-1.7B GGUF weights on Hugging Face"><strong>LFM3-1.7B</strong></a><label class="sr-only" for="model-file">Model quantization</label><select id="model-file" aria-label="Model quantization" title="Choose before loading. Reload the page to change after loading."><option value="LFM3-1.7B-QAD-Q4_0.gguf">QAD · Q4_0</option><option value="LFM3-1.7B-Q4_K_M.gguf">Q4_K_M</option><option value="LFM3-VL-2B-ONNX-q4">VL-2B · 4-bit · vision</option></select></div><button id="theme-toggle" type="button" class="quiet theme-toggle" aria-label="Switch to light theme" title="Switch to light theme (Alt+Shift+T)"><svg class="icon-sun" viewBox="0 0 24 24" width="16" height="16" fill="none" stroke="currentColor" stroke-width="1.75" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true" focusable="false"><circle cx="12" cy="12" r="4"/><path d="M12 2v2M12 20v2m-7.07-17.07 1.41 1.41m11.32 11.32 1.41 1.41M2 12h2m16 0h2M6.34 17.66l-1.41 1.41M19.07 4.93l-1.41 1.41"/></svg><svg class="icon-moon" viewBox="0 0 24 24" width="16" height="16" fill="none" stroke="currentColor" stroke-width="1.75" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true" focusable="false"><path d="M12 3a6 6 0 0 0 9 9 9 9 0 1 1-9-9Z"/></svg></button><button id="load" class="primary" aria-describedby="load-status load-detail">Load model</button></div>
         <p id="load-status" class="sr-only" role="status">Model weights download on first use. Browser caching is best effort.</p>
         <progress id="progress" hidden max="100" value="0" aria-label="Model download"></progress>
         <div id="load-detail" class="sr-only"></div>

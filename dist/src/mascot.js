@@ -55,19 +55,27 @@ function createStage({ name, host, before, layout }) {
   host.insertBefore(canvas, before ?? null);
 
   let unit = 1;
-  const renderer = window.Robot.create({ canvas, model: 'bot', unit: () => unit });
+  const build = () => window.Robot.create({ canvas, model: 'bot', unit: () => unit });
+  const renderer = build();
   const baseHeight = renderer.bounds.h;   // standing height in CSS px at 1 px per voxel
   const stage = {
     name, canvas, renderer, layout,
+    // robot.js reads its --robot-* colours once, so a theme change needs a fresh renderer.
+    rebuild() {
+      const pose = { ...stage.renderer.pose };
+      stage.renderer = build();
+      Object.assign(stage.renderer.pose, pose);
+      stage.height = 0;
+    },
     mode: 'hidden', x: 0, targetX: 0, timer: 0, yaw: 0, height: 0, onShow: null,
     fit(height) {
       if (Math.abs(height - stage.height) < 0.5) return;
       stage.height = height;
       unit = height / baseHeight;
-      renderer.resize();
+      stage.renderer.resize();
     },
     hit(px, py) {
-      const b = renderer.bounds, p = renderer.pose;
+      const b = stage.renderer.bounds, p = stage.renderer.pose;
       return px >= p.x + b.left && px <= p.x + b.right && py >= p.y + b.top && py <= p.y + b.bottom;
     },
     wave() { stage.mode = 'waving'; stage.timer = WAVE_S; stage.yaw = 0; },
@@ -218,6 +226,7 @@ function whenMascot(callback) {
 }
 
 // ─── Init ───
+window.addEventListener('themechange', () => { for (const stage of stages) stage.rebuild(); });
 if (window.Robot && terminal) {
   whenMascot(terminalStage);
   if (dialog && setupCat) dialogStage();

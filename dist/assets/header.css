@@ -1,10 +1,12 @@
 /* Header: edulab rocking-horse mark (paper colourway on the dark header) and the "based on" credit. */
-:root{--brand-mark-size:calc(var(--header-control-height) + 12px)}
-/* The PNG has wide padding around the horse: draw it larger and let the padding overlap the header inset. */
-.brand-mark{display:block;width:var(--brand-mark-size);height:var(--brand-mark-size);margin:calc((var(--header-control-height) - var(--brand-mark-size)) / 2) -8px}
+:root{--brand-mark-size:calc(var(--header-control-height) * 2.5)}   /* 80px: the horse itself ~34px tall */
+/* The horse fills x 57-191, y 71-178 of the 250px PNG (vertically centred): negative margins trim the
+   transparent padding, and the header's overflow clip hides what is left above and below. */
+.brand-mark{display:block;width:var(--brand-mark-size);height:var(--brand-mark-size);
+  margin:calc((var(--header-control-height) - var(--brand-mark-size)) / 2) calc(var(--brand-mark-size) * -0.236) calc((var(--header-control-height) - var(--brand-mark-size)) / 2) calc(var(--brand-mark-size) * -0.228)}
 .brand-group{display:flex;align-items:center;gap:12px;min-width:0;justify-self:start}
 .based-on{margin:0;min-width:0;overflow:hidden;color:var(--muted);font-size:var(--font-small);white-space:nowrap;text-overflow:ellipsis}
-.based-on a{color:var(--text);text-decoration:none;border-bottom:1px solid var(--line-strong)}
-.based-on a:hover{color:var(--accent);border-bottom-color:var(--accent)}
+.based-on a{color:var(--text);text-decoration:underline;text-decoration-color:var(--line-strong);text-underline-offset:3px}
+.based-on a:hover{color:var(--accent);text-decoration-color:currentColor}
 .based-on a:focus-visible{outline:2px solid var(--accent);outline-offset:2px;border-radius:2px}
 @media (width<=850px){.brand-group{grid-area:brand}}
