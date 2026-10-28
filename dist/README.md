@@ -53,6 +53,13 @@ Choose a quantization in the header or download dialog before loading:
 | **QAD · Q4_0** | `LFM3-1.7B-QAD-Q4_0.gguf` |
 
 The default loads by repository ID; QAD passes its filename through `file`.
+
+A third choice, **VL-2B · 4-bit · vision**, loads
+[`onnx-community/LFM3-VL-2B-ONNX`](https://huggingface.co/onnx-community/LFM3-VL-2B-ONNX)
+(`q4` files: 4-bit weights with fp32 math, about 1.5 GB) through transformers.js
+4.3.2 from jsDelivr. The `q4f16` build was rejected because its fp16 math gives
+garbage on some GPUs (Intel Xe-LPG). It uses the same tools and agent loop. Upload `.png .jpg .webp .gif .bmp` images (up to
+5 MiB) and name them in a message, e.g. *What is in photo.jpg?*, to attach them.
 The supplied model library includes 17 kernels and 50 variants for these two
 files. Reload the page to switch quantization after loading.
 
@@ -100,6 +107,8 @@ requires a new chat; history is not silently truncated.
 | `src/upload.js`, `assets/upload.css` | Upload pre-checks, drag-and-drop and file-type help. |
 | `src/mascot.js`, `vendor/robot.js`, `assets/mascot-robot.css` | Walking robot mascot (from q223-kiosk-demo). |
 | `assets/header.css` | "based on" credit in the header. |
+| `src/vl-model.js` | LFM3-VL-2B adapter (transformers.js) with the runtime's generate() shape. |
+| `src/worker-hook.js` | Lets `src/upload.js` send image bytes to the worker. |
 | `src/conversation.js` | Pi display-message adapter. |
 | `src/workspace.js`, `vendor/just-bash.js` | Virtual filesystem, shell, and persistence. |
 | `scripts/` | Optional local server and static build. |

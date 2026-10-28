@@ -1,5 +1,6 @@
 import { Lfm3ForCausalLM } from '../runtime/Lfm3ForCausalLM.js';
 import { WorkspaceController } from './controller.js';
+import { Lfm3VlModel } from './vl-model.js';
 import { createStore, createWorkspace } from './workspace.js';
 
 const emit = message => postMessage(message);
@@ -9,7 +10,7 @@ const initialized = (async () => {
   catch (error) { emit({ type: 'persistence_error', error: `Workspace saving is unavailable: ${error.message}` }); }
   const workspace = createWorkspace(saved?.files, saved?.entries);
   await workspace.ready;
-  const controller = new WorkspaceController({ Model: Lfm3ForCausalLM, workspace, store, saved, emit });
+  const controller = new WorkspaceController({ Model: Lfm3ForCausalLM, VisionModel: Lfm3VlModel, workspace, store, saved, emit });
   emit({ type: 'initialized', ...(await controller.uiSnapshot()) });
   return controller;
 })();

@@ -21,6 +21,7 @@
   <link rel="stylesheet" href="./assets/mascot-robot.css">
   <link rel="stylesheet" href="./assets/header.css">
   <script src="./vendor/robot.js"></script>
+  <script src="./src/worker-hook.js"></script>
   <script type="module" src="./src/mascot.js"></script>
   <script type="module" src="./src/upload.js"></script>
 </head>
@@ -36,7 +37,7 @@
         <span class="sr-only" role="status" aria-live="polite"></span>
       </div>
       <div class="model-panel">
-        <div class="model-heading"><div><a class="header-model-source" href="https://huggingface.co/LiquidAI/LFM3-1.7B-GGUF" target="_blank" rel="noopener noreferrer" aria-label="LFM3-1.7B by Liquid AI on Hugging Face (opens in a new tab)" title="View LFM3-1.7B GGUF weights on Hugging Face"><strong>LFM3-1.7B</strong></a><label class="sr-only" for="model-file">Model quantization</label><select id="model-file" aria-label="Model quantization" title="Choose before loading. Reload the page to change after loading."><option value="LFM3-1.7B-Q4_K_M.gguf">Q4_K_M</option><option value="LFM3-1.7B-QAD-Q4_0.gguf">QAD · Q4_0</option></select></div><button id="load" class="primary" aria-describedby="load-status load-detail">Load model</button></div>
+        <div class="model-heading"><div><a class="header-model-source" href="https://huggingface.co/LiquidAI/LFM3-1.7B-GGUF" target="_blank" rel="noopener noreferrer" aria-label="LFM3-1.7B by Liquid AI on Hugging Face (opens in a new tab)" title="View LFM3-1.7B GGUF weights on Hugging Face"><strong>LFM3-1.7B</strong></a><label class="sr-only" for="model-file">Model quantization</label><select id="model-file" aria-label="Model quantization" title="Choose before loading. Reload the page to change after loading."><option value="LFM3-1.7B-Q4_K_M.gguf">Q4_K_M</option><option value="LFM3-1.7B-QAD-Q4_0.gguf">QAD · Q4_0</option><option value="LFM3-VL-2B-ONNX-q4">VL-2B · 4-bit · vision</option></select></div><button id="load" class="primary" aria-describedby="load-status load-detail">Load model</button></div>
         <p id="load-status" class="sr-only" role="status">Model weights download on first use. Browser caching is best effort.</p>
         <progress id="progress" hidden max="100" value="0" aria-label="Model download"></progress>
         <div id="load-detail" class="sr-only"></div>
@@ -59,7 +60,8 @@
       <div id="upload-help" popover>
         <h3>What you can upload</h3>
         <p><strong>Works:</strong> plain-text files up to 1 MiB each, for example <code>.txt .md .csv .tsv .json .jsonl .yaml .toml .ini .xml .html .css .js .ts .py .sh .sql .log .svg</code>. Any other text format works too.</p>
-        <p><strong>Does not work:</strong> PDF, Word, Excel, PowerPoint, images, audio, video, ZIP and other binary files. Export spreadsheets as <code>.csv</code>, and paste document text into a <code>.txt</code> or <code>.md</code> file.</p>
+        <p><strong>Images:</strong> <code>.png .jpg .webp .gif .bmp</code> up to 5 MiB each. Only the <strong>VL-2B · vision</strong> model can see them: pick it before loading, then name the image in your message, for example <code>What is in photo.jpg?</code></p>
+        <p><strong>Does not work:</strong> PDF, Word, Excel, PowerPoint, HEIC, audio, video, ZIP and other binary files. Export spreadsheets as <code>.csv</code>, and paste document text into a <code>.txt</code> or <code>.md</code> file.</p>
         <p><strong>Limits:</strong> a file with the same name must be renamed or deleted first. The whole workspace holds up to 16 MiB. Files go to <code>/workspace</code> and stay in this browser.</p>
         <p><strong>Tip:</strong> the model sees at most 6,000 characters per tool result, so for big files ask it to use <code>head</code>, <code>grep</code> or <code>awk</code>. Python and JavaScript files can be stored and edited, but not run.</p>
         <p class="upload-help-how">Click <strong>Upload</strong> or drag files onto the Workspace panel.</p>
@@ -90,7 +92,7 @@
     <p id="model-description">Everything happens in your browser. Your prompts and files stay on this device.</p>
     <dl class="setup-runtime">
       <div><dt>Model</dt><dd class="setup-model"><a class="model-org" href="https://huggingface.co/LiquidAI" target="_blank" rel="noopener noreferrer" aria-label="Liquid AI on Hugging Face (opens in a new tab)" title="Liquid AI on Hugging Face"><span aria-hidden="true">💧</span></a><a class="model-source" href="https://huggingface.co/LiquidAI/LFM3-1.7B-GGUF" target="_blank" rel="noopener noreferrer" title="View LFM3-1.7B GGUF weights on Hugging Face">LFM3-1.7B</a></dd></div>
-      <div><dt>Quantization</dt><dd><select id="model-file-dialog" aria-label="Model quantization"><option value="LFM3-1.7B-Q4_K_M.gguf">Q4_K_M</option><option value="LFM3-1.7B-QAD-Q4_0.gguf">QAD · Q4_0</option></select></dd></div>
+      <div><dt>Quantization</dt><dd><select id="model-file-dialog" aria-label="Model quantization"><option value="LFM3-1.7B-Q4_K_M.gguf">Q4_K_M</option><option value="LFM3-1.7B-QAD-Q4_0.gguf">QAD · Q4_0</option><option value="LFM3-VL-2B-ONNX-q4">VL-2B · 4-bit · vision</option></select></dd></div>
       <div><dt>Inference</dt><dd>On your GPU</dd></div>
       <div><dt>Shell</dt><dd>Bash in the browser</dd></div>
     </dl>

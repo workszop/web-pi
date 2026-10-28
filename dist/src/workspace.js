@@ -1,4 +1,5 @@
 import { Bash } from '../vendor/just-bash.js';
+import { IMAGE_TYPES, MAX_IMAGE_BYTES } from './config.js';
 
 export const WORKSPACE_DB_NAME = 'lfm3-gguf-workspace';
 export const WORKSPACE_ROOT = '/workspace';
@@ -27,6 +28,9 @@ export const DEFAULT_FILES = Object.freeze({
 const encoder = new TextEncoder();
 const generatedRoots = ['/bin', '/usr/bin', '/dev', '/proc'];
 const isGenerated = path => generatedRoots.some(root => path === root || path.startsWith(root + '/'));
+const extension = path => path.slice(path.lastIndexOf('.') + 1).toLowerCase();
+const isImage = path => path.includes('.') && Object.hasOwn(IMAGE_TYPES, extension(path));
+const imagePlaceholder = (path, size) => `[Image, ${Math.ceil(size / 1024).toLocaleString('en')} KiB. Load LFM3-VL-2B and name "${path.slice(path.lastIndexOf('/') + 1)}" in a message to show it to the model.]\n`;
 
 export function truncateOutput(value, limit = 6_000) {
   return value.length > limit
@@ -107,6 +111,32 @@ export function createWorkspace(files = DEFAULT_FILES, entries) {
     await bash.fs.writeFile(absolutePath, content);
   }
 
+  // Images are stored as bytes for the vision model; the editor only sees a placeholder.
+  async function writeBytes(path, bytes, { signal } = {}) {
+    await ready;
+    checkAbort(signal);
+    if (!(bytes instanceof Uint8Array)) throw new TypeError('Image content must be bytes.');
+    if (!isImage(path)) throw new Error('Only .png, .jpg, .webp, .gif and .bmp images can be stored as bytes.');
+    if (bytes.length > MAX_IMAGE_BYTES) throw new Error('Images can be up to 5 MiB.');
+    const absolutePath = resolve(path);
+    await bash.fs.mkdir(absolutePath.slice(0, absolutePath.lastIndexOf('/')) || '/', { recursive: true });
+    checkAbort(signal);
+    await bash.fs.writeFile(absolutePath, bytes);
+  }
+
+  // Workspace images whose file name appears in the text, for the vision model.
+  async function imagesIn(text) {
+    await ready;
+    const refs = [];
+    for (const path of bash.fs.getAllPaths().sort()) {
+      if (!path.startsWith(WORKSPACE_ROOT + '/') || !isImage(path) || !(await bash.fs.lstat(path)).isFile) continue;
+      const name = path.slice(path.lastIndexOf('/') + 1);
+      const mention = new RegExp(`(^|[\\s/'"\`(@])${name.replace(/[.*+?^${}()|[\]\\]/g, '\\$&')}($|[\\s'"\`),.!?:;])`, 'i');
+      if (mention.test(text)) refs.push({ path, type: IMAGE_TYPES[extension(path)], bytes: await bash.fs.readFileBuffer(path) });
+    }
+    return refs;
+  }
+
   const tools = [
     {
       name: 'bash',
@@ -166,7 +196,8 @@ export function createWorkspace(files = DEFAULT_FILES, entries) {
     await ready;
     const files = {};
     for (const path of bash.fs.getAllPaths().sort()) {
-      if (!isGenerated(path) && (await bash.fs.lstat(path)).isFile) files[path] = await bash.fs.readFile(path);
+      if (isGenerated(path) || !(await bash.fs.lstat(path)).isFile) continue;
+      files[path] = isImage(path) ? imagePlaceholder(path, (await bash.fs.readFileBuffer(path)).length) : await bash.fs.readFile(path);
     }
     return files;
   }
@@ -188,7 +219,7 @@ export function createWorkspace(files = DEFAULT_FILES, entries) {
     return entries;
   }
 
-  return { bash, tools, ready, read, write, snapshot, serialize };
+  return { bash, tools, ready, read, write, writeBytes, imagesIn, snapshot, serialize };
 }
 
 /** Persist workspace files and conversation state in IndexedDB. */

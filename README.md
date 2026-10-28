@@ -33,6 +33,13 @@ Choose a quantization in the header or download dialog before loading:
 | **QAD · Q4_0** | `LFM3-1.7B-QAD-Q4_0.gguf` |
 
 The default loads by repository ID; QAD passes its filename through `file`.
+
+A third choice, **VL-2B · 4-bit · vision**, loads
+[`onnx-community/LFM3-VL-2B-ONNX`](https://huggingface.co/onnx-community/LFM3-VL-2B-ONNX)
+(`q4` files: 4-bit weights with fp32 math, about 1.5 GB) through transformers.js
+4.3.2 from jsDelivr. The `q4f16` build was rejected because its fp16 math gives
+garbage on some GPUs (Intel Xe-LPG). It uses the same tools and agent loop. Upload `.png .jpg .webp .gif .bmp` images (up to
+5 MiB) and name them in a message, e.g. *What is in photo.jpg?*, to attach them.
 The supplied model library includes 17 kernels and 50 variants for these two
 files. Reload the page to switch quantization after loading.
 

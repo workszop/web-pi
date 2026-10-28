@@ -2,6 +2,8 @@
 // and a "what works" popover. Valid files are handed to the bundle's own #upload
 // change handler, which writes them through the worker.
 
+import { IMAGE_TYPES, MAX_IMAGE_BYTES, VL_CHOICE } from './config.js';
+
 // ─── Constants ───
 const MAX_FILE_BYTES = 1024 ** 2;
 const WORKSPACE_ROOT = '/workspace/';
@@ -18,12 +20,10 @@ const BINARY_HINTS = Object.freeze({
   ppt: 'Presentations are not supported. Copy the text into a .md file.',
   pptx: 'Presentations are not supported. Copy the text into a .md file.',
   key: 'Presentations are not supported. Copy the text into a .md file.',
-  png: 'Images are not supported (text-only model).',
-  jpg: 'Images are not supported (text-only model).',
-  jpeg: 'Images are not supported (text-only model).',
-  gif: 'Images are not supported (text-only model).',
-  webp: 'Images are not supported (text-only model).',
-  heic: 'Images are not supported (text-only model).',
+  heic: 'HEIC images are not supported. Convert to .jpg or .png first.',
+  heif: 'HEIF images are not supported. Convert to .jpg or .png first.',
+  tif: 'TIFF images are not supported. Convert to .jpg or .png first.',
+  tiff: 'TIFF images are not supported. Convert to .jpg or .png first.',
   zip: 'Archives are not supported. Upload the files inside instead.',
   gz: 'Archives are not supported. Upload the files inside instead.',
   tar: 'Archives are not supported. Upload the files inside instead.',
@@ -46,7 +46,9 @@ const state = {
   forwarding: false,
   added: [],
   rejected: [], // { name, reason }
+  imageAdded: false,
 };
+let rpcSeq = 0;
 
 // ─── DOM refs ───
 const panel = document.querySelector('#workspace-panel');
@@ -60,14 +62,47 @@ const existingPaths = () => new Set([...document.querySelectorAll('#files button
 const formatSize = bytes => (bytes >= 10 * MAX_FILE_BYTES ? (bytes / MAX_FILE_BYTES).toFixed(1) + ' MiB' : Math.ceil(bytes / 1024).toLocaleString('en') + ' KiB');
 const delay = ms => new Promise(resolve => setTimeout(resolve, ms));
 
+const isImageName = name => Object.hasOwn(IMAGE_TYPES, extensionOf(name));
+
 async function check(file, taken) {
   const hint = BINARY_HINTS[extensionOf(file.name)];
   if (hint) return hint;
-  if (file.size > MAX_FILE_BYTES) return `Too large (${formatSize(file.size)}). The limit is 1 MiB per file.`;
   if (taken.has(WORKSPACE_ROOT + file.name)) return 'A file with this name already exists. Rename or delete it first.';
+  if (isImageName(file.name)) {
+    return file.size > MAX_IMAGE_BYTES ? `Too large (${formatSize(file.size)}). Images can be up to 5 MiB.` : '';
+  }
+  if (file.size > MAX_FILE_BYTES) return `Too large (${formatSize(file.size)}). The limit is 1 MiB per file.`;
   const text = await file.text();
-  if (text.includes('\0')) return 'Looks like a binary file. Only plain-text files work.';
+  if (text.includes('\0')) return 'Looks like a binary file. Only plain-text files and images work.';
   return '';
+}
+
+// Direct RPC to the app's worker (captured by src/worker-hook.js); the bundle ignores replies to ids it did not send.
+function rpc(action, args) {
+  const worker = window.__appWorkers?.find(w => /agent\.worker\.js/.test(w.scriptUrl));
+  if (!worker) return Promise.reject(new Error('The workspace is not ready yet.'));
+  const id = `upload-${++rpcSeq}`;
+  return new Promise((resolve, reject) => {
+    const onMessage = ({ data }) => {
+      if (data?.type !== 'reply' || data.id !== id) return;
+      worker.removeEventListener('message', onMessage);
+      data.error ? reject(new Error(data.error)) : resolve(data.value);
+    };
+    worker.addEventListener('message', onMessage);
+    worker.postMessage({ id, action, args });
+  });
+}
+
+async function uploadImages(images) {
+  for (const file of images) {
+    try {
+      await rpc('write_bytes', { path: WORKSPACE_ROOT + file.name, bytes: new Uint8Array(await file.arrayBuffer()) });
+      state.added.push(file.name);
+      state.imageAdded = true;
+    } catch (error) {
+      state.rejected.push({ name: file.name, reason: error.message });
+    }
+  }
 }
 
 async function upload(files) {
@@ -75,17 +110,26 @@ async function upload(files) {
   state.phase = 'checking';
   state.added = [];
   state.rejected = [];
+  state.imageAdded = false;
   render();
 
   const taken = existingPaths();
   const accepted = new DataTransfer();
+  const images = [];
   for (const file of files) {
     const reason = await check(file, taken);
     if (reason) state.rejected.push({ name: file.name, reason });
     else {
-      accepted.items.add(file);
+      if (isImageName(file.name)) images.push(file);
+      else accepted.items.add(file);
       taken.add(WORKSPACE_ROOT + file.name);
     }
+  }
+
+  if (images.length) {
+    state.phase = 'writing';
+    render();
+    await uploadImages(images);
   }
 
   if (accepted.files.length) {
@@ -139,6 +183,9 @@ function render() {
   if (state.phase === 'checking') return line('Checking files…', 'upload-progress');
   if (state.phase === 'writing') return line('Saving to /workspace…', 'upload-progress');
   if (state.added.length) line(`Added ${state.added.join(', ')}`, 'upload-ok');
+  if (state.imageAdded && document.querySelector('#model-file')?.value !== VL_CHOICE) {
+    line('Only LFM3-VL-2B can see images. Pick "VL-2B · 4-bit · vision" before loading, then name the image in a message.', 'upload-progress');
+  }
   for (const { name, reason } of state.rejected) line(`${name}: ${reason}`, 'upload-bad');
 
   const close = document.createElement('button');
@@ -181,6 +228,15 @@ panel.addEventListener('drop', event => {
   state.dragDepth = 0;
   upload([...event.dataTransfer.files]);
 });
+
+// Image files show a placeholder in the editor; keep it read-only so saving cannot replace the image.
+const editor = document.querySelector('#editor');
+const filename = document.querySelector('#filename');
+new MutationObserver(() => {
+  const image = isImageName(filename.textContent.trim());
+  editor.readOnly = image;
+  editor.dataset.image = String(image);
+}).observe(filename, { childList: true, characterData: true, subtree: true });
 
 // A file dropped outside the workspace must not navigate away from the app.
 for (const type of ['dragover', 'drop']) {

@@ -15,3 +15,5 @@ attributions are included in licenses/.
 Changes in workszop/web-pi: the cat mascot is replaced by the walking voxel
 robot from workszop/q223-kiosk-demo (vendor/robot.js, src/mascot.js); added an
 upload helper (src/upload.js) and a header credit linking the original Space.
+Added an LFM3-VL-2B option (src/vl-model.js) that runs onnx-community/LFM3-VL-2B-ONNX
+with transformers.js 4.3.2 (Hugging Face, Apache-2.0), loaded from jsDelivr at runtime.

@@ -1,10 +1,10 @@
 import { Agent } from '../runtime/agent.js';
-import { CONTEXT_LENGTH, INSTRUCTIONS, MAX_NEW_TOKENS, MAX_ROUNDS, MODEL_FILE, MODEL_FILES, MODEL_ID } from './config.js';
+import { CONTEXT_LENGTH, INSTRUCTIONS, MAX_NEW_TOKENS, MAX_ROUNDS, MODEL_FILE, MODEL_FILES, MODEL_ID, VL_CHOICE, VL_INSTRUCTIONS, VL_MODEL_ID } from './config.js';
 import { appendDelta, assistantMessage, loadProgress, timestamp, toolMessage } from './conversation.js';
 
 export class WorkspaceController {
-  constructor({ Model, workspace, store, saved, emit, AgentClass = Agent }) {
-    Object.assign(this, { Model, workspace, store, emit, AgentClass });
+  constructor({ Model, VisionModel, workspace, store, saved, emit, AgentClass = Agent }) {
+    Object.assign(this, { Model, VisionModel, workspace, store, emit, AgentClass });
     this.history = saved?.messages ?? [];
     this.display = saved?.displayMessages ?? [];
     this.model = null;
@@ -41,24 +41,29 @@ export class WorkspaceController {
   event(event) { this.emit({ type: 'agent_event', event }); }
 
   async load({ file = this.modelFile } = {}, signal) {
-    if (!MODEL_FILES.includes(file)) throw new Error('This runtime supports only LFM3-1.7B-Q4_K_M.gguf and LFM3-1.7B-QAD-Q4_0.gguf.');
-    if (this.model && file !== this.modelFile) throw new Error('Reload the page before choosing a different quantization.');
+    if (!MODEL_FILES.includes(file)) throw new Error('Choose LFM3-1.7B Q4_K_M, LFM3-1.7B QAD Q4_0, or LFM3-VL-2B.');
+    if (this.model && file !== this.modelFile) throw new Error('Reload the page before choosing a different model.');
+    const vision = file === VL_CHOICE;
+    if (vision && !this.VisionModel) throw new Error('The vision model is not available in this build.');
+    const Model = vision ? this.VisionModel : this.Model;
+    const modelId = vision ? VL_MODEL_ID : MODEL_ID;
     if (this.model) return true;
     // Omit file for Q4_K_M: the supplied library owns that repository default.
-    const selection = file === MODEL_FILE ? {} : { file };
-    const support = await this.Model.checkAvailability(MODEL_ID, { ...selection, signal });
+    const selection = file === MODEL_FILE || vision ? {} : { file };
+    const support = await Model.checkAvailability(modelId, { ...selection, signal });
     signal.throwIfAborted();
     if (!support.ok) throw new Error(support.reason || 'This GPU cannot run the model.');
     let model;
     try {
-      model = await this.Model.from_pretrained(MODEL_ID, {
+      model = await Model.from_pretrained(modelId, {
         ...selection, maxLength: CONTEXT_LENGTH, signal,
         onProgress: progress => this.emit(loadProgress(progress)),
       });
       signal.throwIfAborted();
+      if (vision) model.resolveImages = text => this.workspace.imagesIn(text);
       this.model = model;
       this.agent = new this.AgentClass({
-        model, instructions: INSTRUCTIONS, tools: this.workspace.tools, messages: this.history,
+        model, instructions: vision ? VL_INSTRUCTIONS : INSTRUCTIONS, tools: this.workspace.tools, messages: this.history,
         max_new_tokens: MAX_NEW_TOKENS, max_rounds: MAX_ROUNDS,
         do_sample: false,
       });
@@ -193,6 +198,7 @@ export class WorkspaceController {
         return result;
       }
       if (action === 'write') { await this.workspace.write(args.path, args.content); await this.save(); return this.uiSnapshot(); }
+      if (action === 'write_bytes') { await this.workspace.writeBytes(args.path, args.bytes); await this.save(); return true; }
       if (action === 'read') return await this.workspace.read(args.path);
       if (action === 'new_chat') {
         this.agent?.reset();
