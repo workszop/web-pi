@@ -1,4 +1,7 @@
-/* Header credit: "based on" link to the original Space, beside the Pi mark. */
+/* Header: edulab rocking-horse mark (paper colourway on the dark header) and the "based on" credit. */
+:root{--brand-mark-size:calc(var(--header-control-height) + 12px)}
+/* The PNG has wide padding around the horse: draw it larger and let the padding overlap the header inset. */
+.brand-mark{display:block;width:var(--brand-mark-size);height:var(--brand-mark-size);margin:calc((var(--header-control-height) - var(--brand-mark-size)) / 2) -8px}
 .brand-group{display:flex;align-items:center;gap:12px;min-width:0;justify-self:start}
 .based-on{margin:0;min-width:0;overflow:hidden;color:var(--muted);font-size:var(--font-small);white-space:nowrap;text-overflow:ellipsis}
 .based-on a{color:var(--text);text-decoration:none;border-bottom:1px solid var(--line-strong)}

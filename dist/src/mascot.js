@@ -12,6 +12,7 @@ const PAUSE_AWAY_S = [1, 2.5];
 const WAVE_CHANCE = 0.35;
 const MIN_STROLL_PX = 70;
 const MAX_DT = 0.05;
+const HOME_TOLERANCE_PX = 6;   // the bubble shows while the robot is this close to its home spot
 const FOOT_LINE = 0.92;   // fraction of the mascot box height where the old sprite's feet stood
 
 // ─── State ───
@@ -134,6 +135,7 @@ function step(stage, dt) {
   canvas.dataset.robot = stage.mode;
   canvas.dataset.robotX = String(Math.round(stage.x));
   canvas.dataset.robotRange = `${Math.round(L.minX)}-${Math.round(L.maxX)}`;
+  stage.afterStep?.(L);
 }
 
 // ─── Stages ───
@@ -166,6 +168,11 @@ function terminalStage(mascot) {
       return { visible, height, homeX, minX: Math.min(minX, homeX), maxX: homeX, floorY: floor - host.top };
     },
   });
+  // The suggestion bubble belongs to the robot's home spot (bottom right): it shows only while the robot is there.
+  stage.afterStep = L => {
+    const home = String(Math.abs(stage.x - L.homeX) < HOME_TOLERANCE_PX);
+    if (mascot.dataset.robotHome !== home) mascot.dataset.robotHome = home;
+  };
   // The canvas ignores pointer events so the terminal keeps working; hit-test the robot here.
   terminal.addEventListener('pointerdown', event => {
     if (stage.mode === 'hidden') return;

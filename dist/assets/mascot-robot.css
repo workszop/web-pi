@@ -9,6 +9,11 @@
 .robot-stage-terminal{position:absolute;inset:0;width:100%;height:100%}
 .robot-stage-dialog{position:absolute;left:0;bottom:100%;width:100%;height:calc(var(--cat-rise) + 10px);pointer-events:auto}
 
+/* The suggestion bubble shows only while the robot stands at home (bottom right); it fades out when it walks off. */
+.mascot-suggestion{transition:opacity .2s ease,visibility .2s}
+.empty-mascot[data-robot-home="false"] .mascot-suggestion{opacity:0;visibility:hidden;pointer-events:none}
+@media (prefers-reduced-motion:reduce){.mascot-suggestion{transition:none}}
+
 /* The bundle still lays out and measures the cat boxes; keep them, unseen. */
 .mascot-cat{pointer-events:none!important}
 .mascot-cat img,.mascot-eyelids{opacity:0!important}
