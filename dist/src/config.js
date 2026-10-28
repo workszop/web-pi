@@ -1,16 +1,19 @@
 // Keep the tool definitions and instructions stable to reuse the session's KV cache.
 export const MODEL_ID = 'LiquidAI/LFM3-1.7B-GGUF';
-export const MODEL_FILE = 'LFM3-1.7B-Q4_K_M.gguf';
+export const Q4KM_FILE = 'LFM3-1.7B-Q4_K_M.gguf';   // the supplied library's repository default
+export const QAD_FILE = 'LFM3-1.7B-QAD-Q4_0.gguf';
+// App default: same decode speed as Q4_K_M here, 50 MB smaller, 10/10 vs 9/10 on the bench questions (2026-10-28).
+export const MODEL_FILE = QAD_FILE;
 // The vision model is a third choice: ONNX weights run by transformers.js, not a GGUF file.
 export const VL_CHOICE = 'LFM3-VL-2B-ONNX-q4';
 export const VL_MODEL_ID = 'onnx-community/LFM3-VL-2B-ONNX';
 // 4-bit weights with fp32 math: the q4f16 (fp16 math) build produces garbage on some GPUs (Intel Xe-LPG here).
 export const VL_DTYPE = Object.freeze({ vision_encoder: 'q4', embed_tokens: 'q4', decoder_model_merged: 'q4' });
 export const TRANSFORMERS_URL = 'https://cdn.jsdelivr.net/npm/@huggingface/transformers@4.3.2';
-export const MODEL_FILES = Object.freeze([MODEL_FILE, 'LFM3-1.7B-QAD-Q4_0.gguf', VL_CHOICE]);
+export const MODEL_FILES = Object.freeze([QAD_FILE, Q4KM_FILE, VL_CHOICE]);
 export const MODEL_LABELS = Object.freeze({
-  [MODEL_FILE]: { name: 'LFM3-1.7B', url: 'https://huggingface.co/LiquidAI/LFM3-1.7B-GGUF' },
-  'LFM3-1.7B-QAD-Q4_0.gguf': { name: 'LFM3-1.7B', url: 'https://huggingface.co/LiquidAI/LFM3-1.7B-GGUF' },
+  [QAD_FILE]: { name: 'LFM3-1.7B', url: 'https://huggingface.co/LiquidAI/LFM3-1.7B-GGUF' },
+  [Q4KM_FILE]: { name: 'LFM3-1.7B', url: 'https://huggingface.co/LiquidAI/LFM3-1.7B-GGUF' },
   [VL_CHOICE]: { name: 'LFM3-VL-2B', url: 'https://huggingface.co/onnx-community/LFM3-VL-2B-ONNX' },
 });
 

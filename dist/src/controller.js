@@ -1,5 +1,5 @@
 import { Agent } from '../runtime/agent.js';
-import { CONTEXT_LENGTH, INSTRUCTIONS, MAX_NEW_TOKENS, MAX_ROUNDS, MODEL_FILE, MODEL_FILES, MODEL_ID, VL_CHOICE, VL_INSTRUCTIONS, VL_MODEL_ID } from './config.js';
+import { CONTEXT_LENGTH, INSTRUCTIONS, MAX_NEW_TOKENS, MAX_ROUNDS, MODEL_FILE, MODEL_FILES, MODEL_ID, Q4KM_FILE, VL_CHOICE, VL_INSTRUCTIONS, VL_MODEL_ID } from './config.js';
 import { appendDelta, assistantMessage, loadProgress, timestamp, toolMessage } from './conversation.js';
 
 export class WorkspaceController {
@@ -41,15 +41,15 @@ export class WorkspaceController {
   event(event) { this.emit({ type: 'agent_event', event }); }
 
   async load({ file = this.modelFile } = {}, signal) {
-    if (!MODEL_FILES.includes(file)) throw new Error('Choose LFM3-1.7B Q4_K_M, LFM3-1.7B QAD Q4_0, or LFM3-VL-2B.');
+    if (!MODEL_FILES.includes(file)) throw new Error('Choose LFM3-1.7B QAD Q4_0, LFM3-1.7B Q4_K_M, or LFM3-VL-2B.');
     if (this.model && file !== this.modelFile) throw new Error('Reload the page before choosing a different model.');
     const vision = file === VL_CHOICE;
     if (vision && !this.VisionModel) throw new Error('The vision model is not available in this build.');
     const Model = vision ? this.VisionModel : this.Model;
     const modelId = vision ? VL_MODEL_ID : MODEL_ID;
     if (this.model) return true;
-    // Omit file for Q4_K_M: the supplied library owns that repository default.
-    const selection = file === MODEL_FILE || vision ? {} : { file };
+    // Omit file for Q4_K_M: the supplied library owns that repository default (the app default is QAD).
+    const selection = file === Q4KM_FILE || vision ? {} : { file };
     const support = await Model.checkAvailability(modelId, { ...selection, signal });
     signal.throwIfAborted();
     if (!support.ok) throw new Error(support.reason || 'This GPU cannot run the model.');
@@ -71,7 +71,8 @@ export class WorkspaceController {
       const lostModel = model;
       model.lost?.then(async info => {
         if (this.model !== lostModel) return;
-        this.deviceLoss = new Error(`GPU device lost${info?.message ? ': ' + info.message : '.'} Load the model again to continue.`);
+        // On integrated GPUs a long prefill can outrun the driver's job timeout (see README, Intel integrated GPUs).
+        this.deviceLoss = new Error(`GPU device lost${info?.message ? ': ' + info.message : '.'} Load the model again to continue. If it happens again on a long chat, start a new chat: integrated GPUs can time out while reading long prompts.`);
         this.operation?.abort(this.deviceLoss);
         this.run?.cancel();
         this.emit({ type: 'fatal', error: this.deviceLoss.message });

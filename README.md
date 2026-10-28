@@ -29,10 +29,13 @@ Choose a quantization in the header or download dialog before loading:
 
 | Choice | File in `LiquidAI/LFM3-1.7B-GGUF` |
 | --- | --- |
-| **Q4_K_M** (default) | `LFM3-1.7B-Q4_K_M.gguf` |
-| **QAD · Q4_0** | `LFM3-1.7B-QAD-Q4_0.gguf` |
+| **QAD · Q4_0** (default) | `LFM3-1.7B-QAD-Q4_0.gguf` |
+| **Q4_K_M** | `LFM3-1.7B-Q4_K_M.gguf` |
 
-The default loads by repository ID; QAD passes its filename through `file`.
+QAD passes its filename through `file`; Q4_K_M loads by repository ID (the
+library's own default). QAD is the app default: on an Intel iGPU it decoded as
+fast as Q4_K_M (14.3 vs 14.8 tok/s, within noise), is 50 MB smaller, and scored
+10/10 vs 9/10 on a short question set.
 
 A third choice, **VL-2B · 4-bit · vision**, loads
 [`onnx-community/LFM3-VL-2B-ONNX`](https://huggingface.co/onnx-community/LFM3-VL-2B-ONNX)
@@ -73,3 +76,35 @@ binaries, and network commands are unavailable. Interrupted partial replies
 remain visible but are not included in the model's next prompt. A full context
 requires a new chat; history is not silently truncated.
 
+## Intel integrated GPUs
+
+Measured on an Intel Core Ultra (Meteor Lake) iGPU that WebGPU reports as
+vendor `intel`, architecture `xe-lpg` (Linux 7.2, i915 driver, Chrome 151 on
+Vulkan). LFM3-1.7B decodes at ~15 tok/s but **prefills only ~50 tok/s** there.
+
+| Symptom | Cause | Fix |
+| --- | --- | --- |
+| `GPU device lost … VK_ERROR_DEVICE_LOST` after a long "Reading prompt…" (chat or prompt of ~4,000+ tokens) | One GPU job outlives the i915 preempt timeout (7.5 s on `rcs0`/`ccs0`), so the kernel resets Chrome's GPU context. `journalctl -k` shows `Fence expiration time out … chrome` then `context reset due to GPU hang`. | Start a new chat and keep prompts short (read big files with `head`/`grep`). Untested alternative, as root and reset on reboot: raise `/sys/class/drm/card1/engine/{rcs0,ccs0}/preempt_timeout_ms`; a really hung GPU then freezes the desktop for that long. |
+| LFM3-VL-2B returns nonsense even for "What is the capital of France?" (e.g. `Capacity>**n … and, and, and`) | The ONNX `q4f16` build (fp16 math) miscomputes on this GPU. | Use `q4` (4-bit weights, fp32 math). The app ships `q4`; see `VL_DTYPE` in `src/config.js`. |
+| Results are wrong only sometimes, with or without `device lost` | Another process using the GPU at the same time; i915 resets contexts under contention. | Run one GPU app at a time, then retest. |
+
+Quick diagnosis, in this order:
+
+1. Identify the GPU in the page console:
+   `(await navigator.gpu.requestAdapter()).info` and `adapter.features.has('shader-f16')`.
+2. Look for kernel resets at the failure time:
+   `journalctl -k --since "-1h" | grep -E "GPU HANG|Fence expiration|context reset"`.
+   A hit means a timeout or contention, not app code.
+3. Test the model alone with a plain factual prompt (transformers.js below) before
+   debugging the app. Garbage here means a dtype or GPU problem.
+
+```js
+const T = await import('https://cdn.jsdelivr.net/npm/@huggingface/transformers@4.3.2');
+const id = 'onnx-community/LFM3-VL-2B-ONNX', dtype = { vision_encoder: 'q4', embed_tokens: 'q4', decoder_model_merged: 'q4' };
+const processor = await T.AutoProcessor.from_pretrained(id);
+const model = await T.AutoModelForImageTextToText.from_pretrained(id, { device: 'webgpu', dtype });
+const prompt = processor.apply_chat_template([{ role: 'user', content: 'What is the capital of France?' }], { add_generation_prompt: true, enable_thinking: false });
+const inputs = await processor(null, prompt, { add_special_tokens: false });
+const out = await model.generate({ ...inputs, do_sample: false, max_new_tokens: 30 });
+processor.batch_decode(out.slice(null, [inputs.input_ids.dims.at(-1), null]), { skip_special_tokens: true })[0];
+```
