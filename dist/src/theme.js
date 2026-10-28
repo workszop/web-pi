@@ -12,20 +12,20 @@
   const LIGHT_PI = {
     vars: {
       cyan: '#1E8FC2', blue: '#177AA8', green: '#06753B', red: '#C42722', yellow: '#935700',
-      text: '#1C1917', gray: '#625B53', dimGray: '#6D655C', darkGray: '#C9C2B7', accent: '#146D97',
-      selectedBg: '#EAE6E0', userMsgBg: '#F5F3F0', toolPendingBg: '#F5F3F0', toolSuccessBg: '#EDF5EF',
-      toolErrorBg: '#FBEDEC', customMsgBg: '#F1EDF8',
+      text: '#1C1917', gray: '#4E4842', dimGray: '#5C554E', darkGray: '#A39A8C', accent: '#146D97',
+      selectedBg: '#EAE6E0', userMsgBg: '#EAE6E0', toolPendingBg: '#EAE6E0', toolSuccessBg: '#DCEBE1',
+      toolErrorBg: '#F6DCDA', customMsgBg: '#E8E1F5',
     },
     colors: {
       customMessageLabel: '#7254B6', mdHeading: '#1C1917', mdLink: '#146D97',
       syntaxComment: '#526D48', syntaxKeyword: '#7254B6', syntaxFunction: '#7A4E00', syntaxVariable: '#0F5E85',
       syntaxString: '#A3361F', syntaxNumber: '#06753B', syntaxType: '#146D97', syntaxOperator: '#44403C',
-      syntaxPunctuation: '#44403C', thinkingMinimal: '#6D655C', thinkingLow: '#3A6992', thinkingMedium: '#146D97',
+      syntaxPunctuation: '#44403C', thinkingMinimal: '#5C554E', thinkingLow: '#3A6992', thinkingMedium: '#146D97',
       thinkingHigh: '#7254B6', thinkingXhigh: '#943CB8', thinkingMax: '#B0279E',
     },
     export: { pageBg: '#FFFFFF', cardBg: '#F5F3F0', infoBg: '#FFF4C2' },
-    dg: { muted: '#625B53', toolOutput: '#44403C', thinkingText: '#625B53', dim: '#6D655C', mdLinkUrl: '#6D655C', mdCodeBlockBorder: '#C9C2B7', mdQuote: '#625B53' },
-    ansi: { black: '#EAE6E0', brightBlack: '#625B53', white: '#44403C', brightWhite: '#1C1917' },
+    dg: { muted: '#4E4842', toolOutput: '#2E2A27', thinkingText: '#4E4842', dim: '#5C554E', mdLinkUrl: '#5C554E', mdCodeBlockBorder: '#A39A8C', mdQuote: '#4E4842' },
+    ansi: { black: '#EAE6E0', brightBlack: '#4E4842', white: '#2E2A27', brightWhite: '#1C1917' },
   };
   const DARK_ANSI = { black: '#18181e', brightBlack: '#9696a4', white: '#d4d4d4', brightWhite: '#f2f2f4' };
 

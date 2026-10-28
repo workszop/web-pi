@@ -3,8 +3,9 @@
 :root[data-theme="light"]{
   color-scheme:light;
   /* the bundle's own tokens */
-  --background:#FFFFFF;--surface:#F5F3F0;--panel:#F5F3F0;--control:#EAE6E0;--hover:#E0DBD3;--selected:#E0DBD3;
-  --line:#E0DBD3;--line-strong:#857C69;--text:#1C1917;--muted:#625B53;--accent:#146D97;
+  --background:#FFFFFF;--surface:#FFFFFF;--panel:#F5F3F0;--control:#EAE6E0;--hover:#E0DBD3;--selected:#E0DBD3;
+  --line:#C9C2B7;--line-strong:#857C69;--text:#1C1917;--muted:#57504A;--accent:#146D97;
+  --edu-contour:#C9C2B7;   /* edulab --line-2: card and panel outlines */
   /* edulab colours used below */
   --edu-yellow:#FFD500;--edu-yellow-hover:#F0C800;--edu-yellow-ink:#1C1917;
   --edu-green-soft:#078342;--edu-red-soft:#C92823;--edu-on-colour:#FFFFFF;--edu-ink:#1C1917;--edu-line-2:#C9C2B7;
@@ -18,6 +19,24 @@
   --robot-shadow:rgba(28,25,23,0.28);
   --select-bg:#FFFFFF;--select-border:#857C69;--select-focus:#146D97;
 }
+
+/* Structure: outlined panels on the white page, white work surfaces inside the stone workspace. */
+:root[data-theme="light"] header,
+:root[data-theme="light"] .workspace,
+:root[data-theme="light"] .editor-area,
+:root[data-theme="light"] .workspace>.terminal{border:1px solid var(--edu-contour)}
+:root[data-theme="light"] .shell-entry{border:1px solid var(--line)}
+
+/* Controls: every boundary at >= 3:1 (edulab --line-strong). */
+/* :where() keeps this at low specificity so the primary and selected-file rules below still win. */
+:root[data-theme="light"] :where(button:not(.quiet, .mascot-suggestion, #files button), .button:not(.quiet), .runtime-meter, #shell-form){border:1px solid var(--line-strong)}
+:root[data-theme="light"] #shell-form{background:var(--surface)}
+:root[data-theme="light"] .primary,
+:root[data-theme="light"] #send.has-input:not(:disabled),
+:root[data-theme="light"] #model-confirm{border-color:var(--edu-ink)}
+
+/* Selected file: solid yellow pill with ink text (edulab active item). */
+:root[data-theme="light"] #files button.selected{background:var(--edu-yellow);color:var(--edu-yellow-ink)}
 
 /* Primary actions: solid yellow with ink text (edulab primary). */
 :root[data-theme="light"] .primary,
