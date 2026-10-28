@@ -1,5 +1,5 @@
 import { Agent } from '../runtime/agent.js';
-import { CONTEXT_LENGTH, INSTRUCTIONS, MAX_NEW_TOKENS, MAX_ROUNDS, MODEL_FILE, MODEL_FILES, MODEL_ID, Q4KM_FILE, VL_CHOICE, VL_INSTRUCTIONS, VL_MODEL_ID } from './config.js';
+import { CONTEXT_LENGTH, IMAGE_WORDS, INSTRUCTIONS, MAX_NEW_TOKENS, MAX_ROUNDS, MODEL_FILE, MODEL_FILES, MODEL_ID, Q4KM_FILE, VL_CHOICE, VL_INSTRUCTIONS, VL_MODEL_ID } from './config.js';
 import { appendDelta, assistantMessage, loadProgress, timestamp, toolMessage } from './conversation.js';
 
 export class WorkspaceController {
@@ -60,7 +60,7 @@ export class WorkspaceController {
         onProgress: progress => this.emit(loadProgress(progress)),
       });
       signal.throwIfAborted();
-      if (vision) model.resolveImages = text => this.workspace.imagesIn(text);
+      if (vision) model.resolveImages = message => this.imagesFor(message);
       this.model = model;
       this.agent = new this.AgentClass({
         model, instructions: vision ? VL_INSTRUCTIONS : INSTRUCTIONS, tools: this.workspace.tools, messages: this.history,
@@ -93,6 +93,23 @@ export class WorkspaceController {
       await model?.dispose();
       throw error;
     }
+  }
+
+  // Images for a user message: named ones, else the newest image if the text talks about one.
+  // The choice is stored on the message (saved with history), so later rounds and reloads see the same files.
+  async imagesFor(message) {
+    if (Array.isArray(message.attachments)) return this.workspace.readImages(message.attachments);
+    const text = typeof message.content === 'string' ? message.content : '';
+    let refs = await this.workspace.imagesIn(text);
+    if (!refs.length && IMAGE_WORDS.test(text)) refs = await this.workspace.latestImage();
+    message.attachments = refs.map(ref => ref.path);
+    if (refs.length) {
+      const names = refs.map(ref => ref.path.slice(ref.path.lastIndexOf('/') + 1)).join(', ');
+      this.emit({ type: 'notice', text: `Attached ${names} to your message.` });
+    } else if (IMAGE_WORDS.test(text)) {
+      this.emit({ type: 'notice', text: 'No image found in the workspace. Upload one, then ask again.' });
+    }
+    return refs;
   }
 
   async prompt(text, signal) {

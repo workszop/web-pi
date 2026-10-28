@@ -92,6 +92,10 @@ export function createWorkspace(files = DEFAULT_FILES, entries) {
         await bash.fs.symlink(entry.target, path);
       }
     }
+    // Keep saved modification times: the vision model attaches the newest image.
+    for (const [path, entry] of entries ?? []) {
+      if (entry.type === 'file' && Number.isFinite(entry.mtime)) await bash.fs.utimes(path, new Date(entry.mtime), new Date(entry.mtime));
+    }
   })();
 
   async function read(path, { signal } = {}) {
@@ -213,13 +217,35 @@ export function createWorkspace(files = DEFAULT_FILES, entries) {
       } else if (stat.isDirectory) {
         entries.push([path, { type: 'directory', mode: stat.mode }]);
       } else if (stat.isFile) {
-        entries.push([path, { type: 'file', base64: bytesToBase64(await bash.fs.readFileBuffer(path)), mode: stat.mode }]);
+        entries.push([path, { type: 'file', base64: bytesToBase64(await bash.fs.readFileBuffer(path)), mode: stat.mode, mtime: stat.mtime?.valueOf() }]);
       }
     }
     return entries;
   }
 
-  return { bash, tools, ready, read, write, writeBytes, imagesIn, snapshot, serialize };
+  // The most recently written workspace image, for messages that say "the image" without a name.
+  async function latestImage() {
+    await ready;
+    let newest = null;
+    for (const path of bash.fs.getAllPaths()) {
+      if (!path.startsWith(WORKSPACE_ROOT + '/') || !isImage(path)) continue;
+      const stat = await bash.fs.lstat(path);
+      if (stat.isFile && (!newest || stat.mtime > newest.mtime)) newest = { path, mtime: stat.mtime };
+    }
+    return newest ? readImages([newest.path]) : [];
+  }
+
+  async function readImages(paths) {
+    await ready;
+    const refs = [];
+    for (const path of paths) {
+      try { refs.push({ path, type: IMAGE_TYPES[extension(path)], bytes: await bash.fs.readFileBuffer(path) }); }
+      catch { /* deleted since it was attached */ }
+    }
+    return refs;
+  }
+
+  return { bash, tools, ready, read, write, writeBytes, imagesIn, latestImage, readImages, snapshot, serialize };
 }
 
 /** Persist workspace files and conversation state in IndexedDB. */

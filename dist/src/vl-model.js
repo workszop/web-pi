@@ -94,7 +94,7 @@ function contextError(required, capacity) {
 // ─── Model ───
 export class Lfm3VlModel {
   #T; #processor; #model; #images = new WeakMap(); #busy = false;
-  resolveImages = async () => [];
+  resolveImages = async () => [];   // (message) -> [{ path, type, bytes }], set by the controller
 
   constructor(T, processor, model, maxLength) {
     this.#T = T;
@@ -137,8 +137,9 @@ export class Lfm3VlModel {
   async #imagesFor(message) {
     if (!this.#images.has(message)) {
       this.#images.set(message, (async () => {
-        const refs = (await this.resolveImages(message.content)).slice(0, MAX_IMAGES_PER_MESSAGE);
-        return Promise.all(refs.map(ref => this.#T.RawImage.fromBlob(new Blob([ref.bytes], { type: ref.type }))));
+        const refs = (await this.resolveImages(message)).slice(0, MAX_IMAGES_PER_MESSAGE);
+        const images = await Promise.all(refs.map(ref => this.#T.RawImage.fromBlob(new Blob([ref.bytes], { type: ref.type }))));
+        return { images, names: refs.map(ref => ref.path.slice(ref.path.lastIndexOf('/') + 1)) };
       })());
     }
     return this.#images.get(message);
@@ -153,9 +154,10 @@ export class Lfm3VlModel {
       for (const message of messages) {
         if (message.role === 'user' && typeof message.content === 'string') {
           const found = await this.#imagesFor(message);
-          if (found.length) {
-            chat.push({ ...message, content: [...found.map(() => ({ type: 'image' })), { type: 'text', text: message.content }] });
-            images.push(...found);
+          if (found.images.length) {
+            const note = `\n\n(Attached image${found.names.length > 1 ? 's' : ''}: ${found.names.join(', ')})`;
+            chat.push({ role: 'user', content: [...found.images.map(() => ({ type: 'image' })), { type: 'text', text: message.content + note }] });
+            images.push(...found.images);
             continue;
           }
         }

@@ -184,7 +184,7 @@ function render() {
   if (state.phase === 'writing') return line('Saving to /workspace…', 'upload-progress');
   if (state.added.length) line(`Added ${state.added.join(', ')}`, 'upload-ok');
   if (state.imageAdded && document.querySelector('#model-file')?.value !== VL_CHOICE) {
-    line('Only LFM3-VL-2B can see images. Pick "VL-2B · 4-bit · vision" before loading, then name the image in a message.', 'upload-progress');
+    line('Only LFM3-VL-2B can see images. Pick "VL-2B · 4-bit · vision" before loading, then ask about the image.', 'upload-progress');
   }
   for (const { name, reason } of state.rejected) line(`${name}: ${reason}`, 'upload-bad');
 

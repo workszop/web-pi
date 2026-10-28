@@ -21,6 +21,8 @@ export const MODEL_LABELS = Object.freeze({
 export const IMAGE_TYPES = Object.freeze({ png: 'image/png', jpg: 'image/jpeg', jpeg: 'image/jpeg', webp: 'image/webp', gif: 'image/gif', bmp: 'image/bmp' });
 export const MAX_IMAGE_BYTES = 5 * 1024 * 1024;
 export const MAX_IMAGES_PER_MESSAGE = 4;
+// A message that talks about an image without naming one gets the newest workspace image (English and Polish).
+export const IMAGE_WORDS = /\b(images?|pictures?|pics?|photos?|photographs?|screenshots?|screen shots?|img|diagrams?|charts?|drawings?|illustrations?|logos?|scans?)\b|zdj[eę]ci|obraz|rysun|fotk|fotograf|zrzut|grafik|wykres|skan|ilustracj/i;
 export const CONTEXT_LENGTH = 32768;
 export const MAX_NEW_TOKENS = 4096;
 export const MAX_ROUNDS = 12;
@@ -34,4 +36,4 @@ Python, Node.js, npm, native binaries, and network commands are unavailable. You
 Interpret follow-ups using the conversation. Inspect files before editing. Verify changes with a tool, then give a short factual answer.`;
 
 export const VL_INSTRUCTIONS = INSTRUCTIONS.replace('LFM3-1.7B from Liquid AI', 'LFM3-VL-2B from Liquid AI') + `
-You can see images. When the user names a workspace image (.png, .jpg, .webp, .gif, .bmp) in a message, that image is attached to the message; answer from what you see in it. Do not read image files with tools.`;
+You can see images. An image is attached to a user message when the user names a workspace image (.png, .jpg, .webp, .gif, .bmp), or mentions an image without a name (then the newest one is attached); its file name is noted after the message. Answer from what you see in it. Do not read image files with tools.`;
