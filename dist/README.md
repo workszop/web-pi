@@ -71,7 +71,10 @@ required.
 - Stop, Escape, or Ctrl+C cancels a running response/tool.
 - `/load`, `/new`, `/help`, and `!ls` work in the terminal.
 - Read, write, edit, and bash tools use the same virtual filesystem as the editor.
-- Import accepts text files; Export downloads a workspace JSON snapshot.
+- Upload (button or drag onto the Workspace panel) accepts plain-text files up
+  to 1 MiB each; PDF, Office, images, archives and other binaries are rejected
+  with a reason. The `?` button lists what works. Export downloads a workspace
+  JSON snapshot.
 - Files, chats, and the loaded quantization are saved in IndexedDB when available.
 - New chat clears conversation history and keeps files.
 
@@ -94,6 +97,7 @@ requires a new chat; history is not silently truncated.
 | `src/controller.js` | Loading, streaming, tools, cancellation, and saves. |
 | `src/config.js` | Model files, limits, and instructions. |
 | `src/model-choice.js` | Quantization selectors. |
+| `src/upload.js`, `assets/upload.css` | Upload pre-checks, drag-and-drop and file-type help. |
 | `src/conversation.js` | Pi display-message adapter. |
 | `src/workspace.js`, `vendor/just-bash.js` | Virtual filesystem, shell, and persistence. |
 | `scripts/` | Optional local server and static build. |
