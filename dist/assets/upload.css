@@ -5,15 +5,15 @@
 
 #workspace-panel{position:relative}
 #workspace-panel[data-upload=dragging]::after{
-  content:"Drop text files to add them to /workspace";
+  content:"Drop text files or images to add them to /workspace";
   position:absolute;inset:8px;z-index:5;display:grid;place-items:center;
   border:1.5px dashed var(--accent);border-radius:var(--radius);
   background:color-mix(in srgb,var(--panel) 88%,transparent);
-  color:var(--text);font-size:13px;pointer-events:none;
+  color:var(--text);font-size:var(--font-ui);pointer-events:none;
   animation:upload-fade .12s ease-out;
 }
 
-#upload-status{margin:0 10px 6px;padding:7px 10px;border-radius:var(--radius-small);background:var(--control);font-size:12px;line-height:1.45;animation:upload-fade .15s ease-out}
+#upload-status{margin:0 10px 6px;padding:7px 10px;border-radius:var(--radius-small);background:var(--control);font-size:var(--font-ui);line-height:1.45;animation:upload-fade .15s ease-out}
 #upload-status p{margin:0}
 #upload-status p+p{margin-top:3px}
 #upload-status .upload-progress{color:var(--muted)}
@@ -26,14 +26,14 @@
   position-anchor:--upload-info;position-area:bottom span-left;margin:6px 0 0;
   width:min(380px,calc(100vw - 32px));padding:12px 14px;
   border:1px solid var(--line-strong);border-radius:var(--radius-small);
-  background:var(--surface);color:var(--text);font-size:12px;line-height:1.5;
+  background:var(--surface);color:var(--text);font-size:var(--font-ui);line-height:1.5;
   box-shadow:0 10px 30px color-mix(in srgb,var(--background) 70%,transparent);
 }
 #upload-help:popover-open{animation:upload-fade .12s ease-out}
-#upload-help h3{margin:0 0 6px;font-size:12px;font-weight:600}
+#upload-help h3{margin:0 0 6px;font-size:var(--font-ui);font-weight:600}
 #upload-help p{margin:0 0 8px;color:var(--muted)}
 #upload-help strong{color:var(--text);font-weight:600}
-#upload-help code{font-size:11px;color:var(--text)}
+#upload-help code{font-size:var(--font-small);color:var(--text)}
 #upload-help .upload-help-how{margin:0}
 
 @keyframes upload-fade{from{opacity:0}to{opacity:1}}

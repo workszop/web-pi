@@ -1,0 +1,19 @@
+/* Larger type for the main areas. Sizes come from the --font-* tokens set inline in index.html
+   (inline so the chat terminal can read --font-chat when the bundle creates it). */
+#editor,#editor-highlight{font-size:var(--font-editor)}
+#files button,#filename{font-size:var(--font-files)}
+.file-area{grid-template-columns:calc(var(--font-files) * 12.5) minmax(0,1fr)}   /* was 140px at 11px text */
+@media (width<=850px){.file-area{grid-template-columns:calc(var(--font-files) * 9.5) minmax(0,1fr)}}   /* was 115px */
+#terminal-output{font-size:var(--font-shell)}
+#command,#command-highlight{font-size:var(--font-shell);line-height:1.6}
+.shell-toolbar,.terminal summary,.terminal summary span{font-size:var(--font-small)}
+button,.button{font-size:var(--font-ui)}
+.quiet{font-size:var(--font-small)}
+#notice,.mascot-suggestion{font-size:var(--font-ui)}
+.workspace-heading h2,.model-heading strong{font-size:var(--font-ui)}
+#shell-hint,.shell-status,.workspace-note,footer{font-size:var(--font-tiny)}
+
+/* Touch screens: inputs stay at 16px or more so mobile browsers do not zoom on focus. */
+@media (pointer:coarse){
+  #command,#command-highlight,#pi-terminal .xterm-helper-textarea{font-size:max(16px,var(--font-shell))}
+}
