@@ -98,6 +98,8 @@ requires a new chat; history is not silently truncated.
 | `src/config.js` | Model files, limits, and instructions. |
 | `src/model-choice.js` | Quantization selectors. |
 | `src/upload.js`, `assets/upload.css` | Upload pre-checks, drag-and-drop and file-type help. |
+| `src/mascot.js`, `vendor/robot.js`, `assets/mascot-robot.css` | Walking robot mascot (from q223-kiosk-demo). |
+| `assets/header.css` | "based on" credit in the header. |
 | `src/conversation.js` | Pi display-message adapter. |
 | `src/workspace.js`, `vendor/just-bash.js` | Virtual filesystem, shell, and persistence. |
 | `scripts/` | Optional local server and static build. |

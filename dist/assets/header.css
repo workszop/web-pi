@@ -1,0 +1,7 @@
+/* Header credit: "based on" link to the original Space, beside the Pi mark. */
+.brand-group{display:flex;align-items:center;gap:12px;min-width:0;justify-self:start}
+.based-on{margin:0;min-width:0;overflow:hidden;color:var(--muted);font-size:11px;white-space:nowrap;text-overflow:ellipsis}
+.based-on a{color:var(--text);text-decoration:none;border-bottom:1px solid var(--line-strong)}
+.based-on a:hover{color:var(--accent);border-bottom-color:var(--accent)}
+.based-on a:focus-visible{outline:2px solid var(--accent);outline-offset:2px;border-radius:2px}
+@media (width<=850px){.brand-group{grid-area:brand}}

@@ -9,3 +9,7 @@ remain subject to their repository terms.
 
 The interface has been modified for LFM3 loading, quantization selection,
 streaming, and workspace persistence.
+
+Changes in workszop/web-pi: the cat mascot is replaced by the walking voxel
+robot from workszop/q223-kiosk-demo (vendor/robot.js, src/mascot.js); added an
+upload helper (src/upload.js) and a header credit linking the original Space.

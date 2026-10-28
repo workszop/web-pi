@@ -5,7 +5,6 @@
   <meta name="theme-color" content="#18181e">
   <meta name="color-scheme" content="dark">
   <link rel="icon" href="./favicon.svg" type="image/svg+xml">
-  <link rel="preload" href="./modal-cat-v1.png" as="image" type="image/png" fetchpriority="high">
   <meta name="description" content="Pi, LFM3 and a bash workspace, running entirely in your browser.">
   <meta property="og:type" content="website">
   <meta property="og:title" content="Pi, entirely in your browser.">
@@ -19,10 +18,14 @@
   <link rel="stylesheet" href="./assets/mascot-clip-81213051.css">
   <link rel="stylesheet" href="./assets/model-choice.css">
   <link rel="stylesheet" href="./assets/upload.css">
+  <link rel="stylesheet" href="./assets/mascot-robot.css">
+  <link rel="stylesheet" href="./assets/header.css">
+  <script src="./vendor/robot.js"></script>
+  <script type="module" src="./src/mascot.js"></script>
   <script type="module" src="./src/upload.js"></script>
 </head>
 <body>
-  <header><a class="brand" href="./" aria-label="Pi"><svg class="pi-logo" viewBox="165.29 165.29 469.43 469.43" width="18" height="18" aria-hidden="true" focusable="false"><path fill="currentColor" fill-rule="evenodd" d="M165.29 165.29H517.36V400H400V517.36H282.65V634.72H165.29ZM282.65 282.65V400H400V282.65Z"/><path fill="currentColor" d="M517.36 400H634.72V634.72H517.36Z"/></svg></a>
+  <header><div class="brand-group"><a class="brand" href="./" aria-label="Pi"><svg class="pi-logo" viewBox="165.29 165.29 469.43 469.43" width="18" height="18" aria-hidden="true" focusable="false"><path fill="currentColor" fill-rule="evenodd" d="M165.29 165.29H517.36V400H400V517.36H282.65V634.72H165.29ZM282.65 282.65V400H400V282.65Z"/><path fill="currentColor" d="M517.36 400H634.72V634.72H517.36Z"/></svg></a><p class="based-on">based on <a href="https://huggingface.co/spaces/TechnoBaptist/LFM3-1.7B-WebGPU-Pi" target="_blank" rel="noopener noreferrer" title="Original app on Hugging Face Spaces (opens in a new tab)">TechnoBaptist/LFM3-1.7B-WebGPU-Pi</a></p></div>
       <div id="runtime-meter" class="runtime-meter" role="group" aria-label="Execution in this browser" data-state="idle">
         <div class="runtime-content">
           <span class="runtime-location"><span class="runtime-dot" aria-hidden="true"></span><span class="runtime-engine">WebGPU</span></span>
@@ -33,7 +36,7 @@
         <span class="sr-only" role="status" aria-live="polite"></span>
       </div>
       <div class="model-panel">
-        <div class="model-heading"><div><a class="header-model-source" href="https://huggingface.co/LiquidAI/LFM3-1.7B-GGUF" target="_blank" rel="noopener noreferrer" aria-label="LFM3-1.7B by Liquid AI on Hugging Face (opens in a new tab)" title="View LFM3-1.7B GGUF weights on Hugging Face"><span aria-hidden="true">💧</span><strong>LFM3-1.7B</strong></a><label class="sr-only" for="model-file">Model quantization</label><select id="model-file" aria-label="Model quantization" title="Choose before loading. Reload the page to change after loading."><option value="LFM3-1.7B-Q4_K_M.gguf">Q4_K_M</option><option value="LFM3-1.7B-QAD-Q4_0.gguf">QAD · Q4_0</option></select></div><button id="load" class="primary" aria-describedby="load-status load-detail">Load model</button></div>
+        <div class="model-heading"><div><a class="header-model-source" href="https://huggingface.co/LiquidAI/LFM3-1.7B-GGUF" target="_blank" rel="noopener noreferrer" aria-label="LFM3-1.7B by Liquid AI on Hugging Face (opens in a new tab)" title="View LFM3-1.7B GGUF weights on Hugging Face"><strong>LFM3-1.7B</strong></a><label class="sr-only" for="model-file">Model quantization</label><select id="model-file" aria-label="Model quantization" title="Choose before loading. Reload the page to change after loading."><option value="LFM3-1.7B-Q4_K_M.gguf">Q4_K_M</option><option value="LFM3-1.7B-QAD-Q4_0.gguf">QAD · Q4_0</option></select></div><button id="load" class="primary" aria-describedby="load-status load-detail">Load model</button></div>
         <p id="load-status" class="sr-only" role="status">Model weights download on first use. Browser caching is best effort.</p>
         <progress id="progress" hidden max="100" value="0" aria-label="Model download"></progress>
         <div id="load-detail" class="sr-only"></div>
@@ -78,7 +81,7 @@
   </main>
   <dialog id="model-dialog" aria-labelledby="model-title" aria-describedby="model-description">
     <div class="setup-paws" aria-hidden="true"><i></i><i></i><i></i><i></i><i></i><i></i></div>
-    <div class="setup-cat" aria-hidden="true"><span class="setup-cat-tail"></span><img src="./modal-cat-v1.png" width="1254" height="1254" alt="" draggable="false" loading="eager" fetchpriority="high" decoding="async"><span class="setup-cat-eyelids"></span></div>
+    <div class="setup-cat" aria-hidden="true"><span class="setup-cat-tail"></span><img width="1254" height="1254" alt="" draggable="false"><span class="setup-cat-eyelids"></span></div>
     <div class="setup-heading">
       <h2 id="model-title">Download model weights</h2>
       <button id="model-cancel" type="button" aria-label="Close model setup" title="Close model setup"><svg viewBox="0 0 24 24" width="16" height="16" fill="none" stroke="currentColor" stroke-width="1.75" stroke-linecap="round" aria-hidden="true" focusable="false"><path d="m6 6 12 12M18 6 6 18"/></svg></button>

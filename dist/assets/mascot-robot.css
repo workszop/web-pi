@@ -1,0 +1,16 @@
+/* Walking robot mascot (src/mascot.js + vendor/robot.js) in place of the cat. */
+:root{
+  --robot-body:#F1F0EC;--robot-dark:#8E97A6;--robot-metal:#4B5563;
+  --robot-pink:#d20757;--robot-berry:#8A004C;--robot-teal:#0E9F8E;
+  --robot-eye:#7FF5E8;--robot-eye-off:#1E3140;--robot-shadow:rgba(0,0,0,0.45);
+}
+
+.robot-stage{display:block;pointer-events:none}
+.robot-stage-terminal{position:absolute;inset:0;width:100%;height:100%}
+.robot-stage-dialog{position:absolute;left:0;bottom:100%;width:100%;height:calc(var(--cat-rise) + 10px);pointer-events:auto}
+
+/* The bundle still lays out and measures the cat boxes; keep them, unseen. */
+.mascot-cat{pointer-events:none!important}
+.mascot-cat img,.mascot-eyelids{opacity:0!important}
+.setup-cat{visibility:hidden!important;pointer-events:none!important}
+.terminal-paws,.setup-paws{display:none!important}
