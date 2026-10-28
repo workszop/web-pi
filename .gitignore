@@ -1,0 +1,48 @@
+# Only the prebuilt static app is deployed to the Space.
+
+# App source, tests and build tooling
+app/
+scripts/
+requirements-convert.txt
+
+# Research, validation and design notes
+research/
+validation/
+design/
+
+# Stale deploy metadata and duplicates
+deployment-manifest.json
+SPACE_README.md
+
+# Old build outputs no longer referenced by index.html
+assets/index-BYQgYgZh.css
+assets/index-CZ2XkaaI.css
+assets/index-DDP1SfMR.js
+assets/index-Du7Z1b0r.js
+assets/index-ONwcU9a1.js
+
+# ONNX Runtime variants the app never loads (it only uses asyncify)
+runtime/ort-wasm-simd-threaded.mjs
+runtime/ort-wasm-simd-threaded.wasm
+runtime/ort-wasm-simd-threaded.jsep.mjs
+runtime/ort-wasm-simd-threaded.jsep.wasm
+runtime/ort-wasm-simd-threaded.jspi.mjs
+runtime/ort-wasm-simd-threaded.jspi.wasm
+
+# Unused images (paw-print.svg is inlined into the CSS bundle)
+social-thumbnail-v1.png
+social-thumbnail-v2.png
+paw-print.svg
+
+.DS_Store
+node_modules/
+
+# Local working artifacts
+mockups/
+plans/
+superpowers/
+progress.md
+review*.md
+*.plan.md
+*.draft.*
+scratch/

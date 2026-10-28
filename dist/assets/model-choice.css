@@ -1,0 +1,19 @@
+#model-file, #model-file-dialog {
+  font: inherit;
+  font-size: 11px;
+  color: inherit;
+  background: #24242c;
+  border: 1px solid #41414b;
+  border-radius: 4px;
+  padding: 4px 6px;
+  max-width: 100%;
+}
+#model-file { margin-left: 8px; }
+#model-file:disabled, #model-file-dialog:disabled { opacity: .65; }
+#model-file:focus-visible, #model-file-dialog:focus-visible {
+  outline: 2px solid #a3cc89;
+  outline-offset: 2px;
+}
+@media (max-width: 480px) {
+  #model-file { margin-left: 4px; font-size: 10px; padding: 3px; }
+}

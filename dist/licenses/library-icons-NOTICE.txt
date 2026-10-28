@@ -1,0 +1,6 @@
+Hugging Face logo (unmodified):
+https://huggingface.co/front/assets/huggingface_logo-noborder.svg
+
+Pi mark: see pi-logo-NOTICE.txt.
+The terminal beside just-bash is an app-drawn generic shell icon.
+Names and marks identify the projects used by this independent demo.
